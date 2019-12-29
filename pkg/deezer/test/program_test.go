@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/joshbarrass/deezloader/pkg/deezer"
+	"github.com/joshbarrass/deezerdl/pkg/deezer"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/stretchr/testify/assert"
 )

@@ -1,4 +1,4 @@
-module github.com/joshbarrass/deezloader
+module github.com/joshbarrass/deezerdl
 
 go 1.12
 
