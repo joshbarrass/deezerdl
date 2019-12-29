@@ -1,10 +1,9 @@
-package test
+package deezer
 
 import (
 	"fmt"
 	"testing"
 
-	"github.com/joshbarrass/deezerdl/pkg/deezer"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/stretchr/testify/assert"
 )
@@ -14,13 +13,13 @@ type Configuration struct {
 	DebugMode bool   `envconfig:"DEBUG_MODE"`
 }
 
-func setup(t *testing.T) (Configuration, *deezer.API) {
+func testSetup(t *testing.T) (Configuration, *API) {
 	var config Configuration
 	if err := envconfig.Process("", &config); err != nil {
 		t.Skip("Unable to load config -- skipping")
 	}
 
-	api, err := deezer.NewAPI(config.DebugMode)
+	api, err := NewAPI(config.DebugMode)
 	assert.Equal(t, nil, err)
 	return config, api
 }
@@ -30,7 +29,7 @@ func setup(t *testing.T) (Configuration, *deezer.API) {
 // cannot be loaded.
 func TestProgram(t *testing.T) {
 	t.Run("Cookie Login", func(t *testing.T) {
-		config, api := setup(t)
+		config, api := testSetup(t)
 
 		err := api.CookieLogin(config.ArlCookie)
 		assert.Equal(t, nil, err)
@@ -43,7 +42,7 @@ func TestProgram(t *testing.T) {
 			testName = "One More Time"
 			testMD5  = "43808a3ac856cc117362ab94718603ba"
 		)
-		config, api := setup(t)
+		config, api := testSetup(t)
 
 		api.CookieLogin(config.ArlCookie)
 
@@ -60,7 +59,7 @@ func TestProgram(t *testing.T) {
 
 		assert.Equal(t, testMD5, track.MD5)
 
-		u, err := track.GetDownloadURL(deezer.FLAC)
+		u, err := track.GetDownloadURL(FLAC)
 		assert.Equal(t, err, nil)
 		fmt.Println(u.String())
 	})
