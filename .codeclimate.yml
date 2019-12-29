@@ -6,3 +6,11 @@ checks:
   method-complexity:
     config:
       threshold: 15
+
+engines:
+  gofmt:
+    enabled: true
+  golint:
+    enabled: true
+  govet:
+    enabled: true
