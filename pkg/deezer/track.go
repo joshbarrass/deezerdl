@@ -11,7 +11,9 @@ import (
 type Format int
 
 const (
-	FLAC Format = 9
+	FLAC    Format = 9
+	MP3_320        = 3
+	MP3_256        = 5
 )
 
 const (
