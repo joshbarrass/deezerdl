@@ -80,3 +80,10 @@ flycheck_*.el
 /Godeps/
 
 # End of https://www.gitignore.io/api/go
+
+# compiled binary
+deezerdl
+
+# downloaded files
+*.mp3
+*.flac
