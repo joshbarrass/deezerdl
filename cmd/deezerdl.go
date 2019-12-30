@@ -35,28 +35,35 @@ func main() {
 	}
 	opts, err := parser.ParseArgs(doc, argv, VERSION)
 	if err != nil {
-		logrus.Info(argv)
-		logrus.Fatalf("failed to create parser: %s", err)
+		// err is "" if no valid argument
+		if err.Error() != "" {
+			logrus.Fatalf("failed to create parser: %s", err)
+		} else {
+			return
+		}
 	}
-	// fmt.Println(opts)
 
 	// login method
-	if login, err := opts.Bool("login"); err != nil {
-		logrus.Fatalf("failed to parse args: %s", err)
-	} else if login {
-		config.ARLCookie, err = opts.String("<arl>")
-		if err != nil {
-			logrus.Fatalf("failed to set arl cookie: %s", err)
+	if _, ok := opts["login"]; ok {
+		if login, err := opts.Bool("login"); err != nil {
+			logrus.Fatalf("failed to parse args: %s", err)
+		} else if login {
+			config.ARLCookie, err = opts.String("<arl>")
+			if err != nil {
+				logrus.Fatalf("failed to set arl cookie: %s", err)
+			}
+			config.SaveConfig()
+			fmt.Println("Saved arl! You can now use the rest of the program.")
+			return
 		}
-		config.SaveConfig()
-		fmt.Println("Saved arl! You can now use the rest of the program.")
-		return
 	}
 
 	// download method
-	if dl, err := opts.Bool("download"); err != nil {
-		logrus.Fatalf("failed to parse args: %s", err)
-	} else if dl {
-		internal.Download(&opts, config)
+	if _, ok := opts["download"]; ok {
+		if dl, err := opts.Bool("download"); err != nil {
+			logrus.Fatalf("failed to parse args: %s", err)
+		} else if dl {
+			internal.Download(&opts, config)
+		}
 	}
 }
