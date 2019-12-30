@@ -10,7 +10,8 @@ import (
 // https://progolang.com/how-to-download-files-in-go/
 
 type WriteTracker struct {
-	bytes uint64
+	bytes  uint64
+	Format string
 }
 
 // Write takes the input bytes and increments the total number of
@@ -28,5 +29,17 @@ func (tracker *WriteTracker) ShowProgress() {
 	fmt.Printf("\r%s", strings.Repeat(" ", 50))
 
 	// print current progress
-	fmt.Printf("\rDownloaded %s", humanize.Bytes(tracker.bytes))
+	fmt.Printf(tracker.Format, humanize.Bytes(tracker.bytes))
+}
+
+// NewWriteTracker returns a pointer to a new write tracker with a
+// custom format. Use an empty string for a default "downloaded"
+// formatter. %s is used for the bytes.
+func NewWriteTracker(format string) *WriteTracker {
+	if format == "" {
+		format = "\rDownloaded %s"
+	}
+	return &WriteTracker{
+		Format: format,
+	}
 }

@@ -28,7 +28,8 @@ func DownloadFile(url, outPath string) error {
 	}
 	defer resp.Body.Close()
 
-	_, err = io.Copy(outFile, io.TeeReader(resp.Body, &writetracker.WriteTracker{}))
+	wt := writetracker.NewWriteTracker("")
+	_, err = io.Copy(outFile, io.TeeReader(resp.Body, wt))
 	if err != nil {
 		return err
 	}
@@ -73,6 +74,8 @@ func Download(opts docopt.Opts, config *Configuration) {
 		} else {
 			logrus.Fatal("no format specified and no format in your config")
 		}
+	} else {
+		fmt.Printf("Using format: %s\n", formatString)
 	}
 	if err != nil {
 		logrus.Fatalf("failed to get format: %s", err)
@@ -104,10 +107,12 @@ func Download(opts docopt.Opts, config *Configuration) {
 // downloadTrack is for downloading an individual track
 func downloadTrack(format deezer.Format, ID int, api *deezer.API) error {
 	// get track info
+	fmt.Println("\nGetting track info...")
 	track, err := api.GetSongData(ID)
 	if err != nil {
 		return err
 	}
+	fmt.Println("Got track info\n")
 
 	// get the download URL
 	downloadUrl, err := track.GetDownloadURL(format)
@@ -125,12 +130,14 @@ func downloadTrack(format deezer.Format, ID int, api *deezer.API) error {
 	defer os.Remove(encFilename)
 
 	// decrypt song
+	fmt.Println("\nDecrypting...\n")
 	key := track.GetBlowfishKey()
 	err = deezer.DecryptSongFile(key, encFilename, filename)
 	if err != nil {
 		return err
 	}
 
+	fmt.Println("Done!")
 	return nil
 }
 
