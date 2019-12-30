@@ -4,4 +4,6 @@
 [![Issue Count](https://codeclimate.com/github/joshbarrass/deezerdl/badges/issue_count.svg)](https://codeclimate.com/github/joshbarrass/deezerdl)
 
 # deezerdl
-Deezer downloader inspired by DeezloaderRemix written in go
+Deezer downloader inspired by DeezloaderRemix written in go.
+
+This software is not in any way affiliated with Deezer.
