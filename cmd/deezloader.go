@@ -38,7 +38,7 @@ func main() {
 		logrus.Info(argv)
 		logrus.Fatalf("failed to create parser: %s", err)
 	}
-	fmt.Println(opts)
+	// fmt.Println(opts)
 
 	// login method
 	if login, err := opts.Bool("login"); err != nil {
