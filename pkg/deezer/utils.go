@@ -14,6 +14,17 @@ import (
 var combineChar = []byte("\xa4")
 var deezerKey = []byte("jo6aey6haid2Teih")
 
+// DumpResponse dumps a response with logrus
+func DumpResponse(resp *http.Response, message string) {
+	data, err := httputil.DumpResponse(resp, true)
+	if err != nil {
+		return
+	}
+	logrus.WithFields(logrus.Fields{
+		"response": string(data),
+	}).Info(message)
+}
+
 // MD5Hash hashes the input data and returns it as a string
 func MD5Hash(data []byte) string {
 	hash := md5.Sum(data)
@@ -42,15 +53,4 @@ func MakeURLPath(track *Track, format Format) (string, error) {
 	}
 
 	return fmt.Sprintf("%x", ecb), nil
-}
-
-// DumpResponse dumps a response with logrus
-func DumpResponse(resp *http.Response, message string) {
-	data, err := httputil.DumpResponse(resp, true)
-	if err != nil {
-		return
-	}
-	logrus.WithFields(logrus.Fields{
-		"response": string(data),
-	}).Info(message)
 }

@@ -152,13 +152,13 @@ func (api *API) CookieLogin(arl string) error {
 	api.client.Jar.SetCookies(&deezerUrl, []*http.Cookie{&cookie})
 
 	// get a session
-	err := api.GetSession()
+	err := api.getSession()
 	if err != nil {
 		return err
 	}
 
 	// try to get the token
-	api.APIToken, err = api.GetToken()
+	api.APIToken, err = api.getToken()
 	if err != nil {
 		return err
 	}
@@ -167,7 +167,7 @@ func (api *API) CookieLogin(arl string) error {
 }
 
 // GetToken gets the user's API token
-func (api *API) GetToken() (string, error) {
+func (api *API) getToken() (string, error) {
 	// make the request
 	resp, err := api.ApiRequest(getTokenMethod, nil)
 	if err != nil {
@@ -203,7 +203,7 @@ func (api *API) GetToken() (string, error) {
 
 // GetSession makes a request to the base URL to get any required
 // cookies
-func (api *API) GetSession() error {
+func (api *API) getSession() error {
 	// construct the request
 	req, err := http.NewRequest(http.MethodPost,
 		"https://www.deezer.com",
