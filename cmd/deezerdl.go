@@ -15,10 +15,15 @@ const doc = `deezerdl
 
 Usage:
   deezerdl login <arl>
-  deezerdl download track <ID>
+  deezerdl download track <ID> [-f <fmt> | --format=<fmt>]
+  deezerdl config set DefaultFormat <fmt>
+
+Options:
+  -f --format=<fmt>    Specifies the download format. Valid options are FLAC, MP3_320, MP3_256.
 `
 
 var config *internal.Configuration
+var envConfig *internal.EnvConfig
 
 func main() {
 	var err error
@@ -27,13 +32,21 @@ func main() {
 		logrus.Fatalf("failed to load config: %s", err)
 	}
 
+	envConfig, err = internal.GetEnvConfig()
+	if err != nil {
+		logrus.Warnf("failed to load environment variables: %s", err)
+		envConfig = internal.NewEnvConfig()
+	}
+
 	argv := os.Args[1:]
 
 	parser := &docopt.Parser{
-		HelpHandler:  docopt.PrintHelpOnly,
-		OptionsFirst: true,
+		HelpHandler: docopt.PrintHelpOnly,
 	}
 	opts, err := parser.ParseArgs(doc, argv, VERSION)
+	if envConfig.DebugMode {
+		logrus.Info(opts)
+	}
 	if err != nil {
 		// err is "" if no valid argument
 		if err.Error() != "" {
@@ -63,7 +76,18 @@ func main() {
 		if dl, err := opts.Bool("download"); err != nil {
 			logrus.Fatalf("failed to parse args: %s", err)
 		} else if dl {
-			internal.Download(&opts, config)
+			internal.Download(opts, config)
+			return
+		}
+	}
+
+	// config method
+	if _, ok := opts["config"]; ok {
+		if cfg, err := opts.Bool("config"); err != nil {
+			logrus.Fatalf("failed to parse args: %s", err)
+		} else if cfg {
+			internal.Configure(opts, config)
+			return
 		}
 	}
 }

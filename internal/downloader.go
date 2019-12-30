@@ -47,12 +47,37 @@ func DownloadFile(url, outPath string) error {
 
 // Download reads arguments from docopt options to work out what to
 // download
-func Download(opts *docopt.Opts, config *Configuration) {
+func Download(opts docopt.Opts, config *Configuration) {
 	// get the ID
+	if _, ok := opts["<ID>"]; !ok {
+		logrus.Fatal("missing ID")
+	}
 	ID, err := opts.Int("<ID>")
 	if err != nil {
 		logrus.Fatalf("failed to parse arguments: %s", err)
 	}
+
+	// get format
+	var formatString string
+	_, ok := opts["--format"]
+	if ok {
+		// exists, so use that
+		formatString, err = opts.String("--format")
+	}
+	if !ok || err != nil || formatString == "" {
+		// does not exist or failed, use config
+		if config.DefaultFormat != "" {
+			formatString = config.DefaultFormat
+			err = nil
+			fmt.Printf("Using format from config: %s\n", formatString)
+		} else {
+			logrus.Fatal("no format specified and no format in your config")
+		}
+	}
+	if err != nil {
+		logrus.Fatalf("failed to get format: %s", err)
+	}
+	format := FormatStringToFormat(formatString)
 
 	// make API
 	api, err := deezer.NewAPI(false)
@@ -69,7 +94,7 @@ func Download(opts *docopt.Opts, config *Configuration) {
 	if track, err := opts.Bool("track"); err != nil {
 		logrus.Fatalf("failed to parse arguments: %s", err)
 	} else if track {
-		if err := downloadTrack(ID, api); err != nil {
+		if err := downloadTrack(format, ID, api); err != nil {
 			logrus.Fatalf("failed to download track: %s", err)
 		}
 	}
@@ -77,7 +102,7 @@ func Download(opts *docopt.Opts, config *Configuration) {
 }
 
 // downloadTrack is for downloading an individual track
-func downloadTrack(ID int, api *deezer.API) error {
+func downloadTrack(format deezer.Format, ID int, api *deezer.API) error {
 	// get track info
 	track, err := api.GetSongData(ID)
 	if err != nil {
@@ -85,7 +110,7 @@ func downloadTrack(ID int, api *deezer.API) error {
 	}
 
 	// get the download URL
-	downloadUrl, err := track.GetDownloadURL(deezer.FLAC)
+	downloadUrl, err := track.GetDownloadURL(format)
 	if err != nil {
 		return err
 	}
@@ -107,4 +132,19 @@ func downloadTrack(ID int, api *deezer.API) error {
 	}
 
 	return nil
+}
+
+func FormatStringToFormat(formatString string) deezer.Format {
+	var format deezer.Format
+	switch formatString {
+	case "FLAC":
+		format = deezer.FLAC
+	case "MP3_320":
+		format = deezer.MP3_320
+	case "MP3_256":
+		format = deezer.MP3_256
+	default:
+		logrus.Fatalf("invalid format: %s", formatString)
+	}
+	return format
 }

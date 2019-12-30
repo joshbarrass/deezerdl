@@ -13,12 +13,17 @@ const (
 )
 
 type Configuration struct {
-	ARLCookie string `json:"arl"`
+	Version       string `json:"version"`
+	ARLCookie     string `json:"arl"`
+	DefaultFormat string `json:"default_format"`
 }
 
 // NewConfiguration creates an empty, default config
 func NewConfiguration() *Configuration {
-	return &Configuration{}
+	return &Configuration{
+		Version:       "1",
+		DefaultFormat: "MP3_320",
+	}
 }
 
 // CreateConfig creates the config dir and config file if it doesn't
