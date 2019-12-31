@@ -112,7 +112,8 @@ func downloadTrack(format deezer.Format, ID int, api *deezer.API) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("Got track info\n")
+	fmt.Println("Got track info")
+	fmt.Println("")
 
 	// get the download URL
 	downloadUrl, err := track.GetDownloadURL(format)
@@ -130,7 +131,8 @@ func downloadTrack(format deezer.Format, ID int, api *deezer.API) error {
 	defer os.Remove(encFilename)
 
 	// decrypt song
-	fmt.Println("\nDecrypting...\n")
+	fmt.Println("\nDecrypting...")
+	fmt.Println("")
 	key := track.GetBlowfishKey()
 	err = deezer.DecryptSongFile(key, encFilename, filename)
 	if err != nil {
