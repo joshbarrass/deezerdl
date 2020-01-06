@@ -34,13 +34,15 @@ type AlbumResponse struct {
 
 // Album stores the data for the album of interest
 type Album struct {
-	ID       int
-	Title    string
-	Link     string
-	CoverURL string
-	Covers   Covers
-	Date     time.Time
-	Tracks   []AlbumTrack
+	ID        int
+	Title     string
+	Link      string
+	CoverURL  string
+	Covers    Covers
+	Date      time.Time
+	Tracklist []AlbumTrack
+	Tracks    []*Track
+	api       *API
 }
 
 // Covers stores the different cover sizes available
@@ -52,7 +54,7 @@ type Covers struct {
 }
 
 // NewAlbum create an Album from an AlbumResponse
-func NewAlbum(response *AlbumResponse) (*Album, error) {
+func NewAlbum(response *AlbumResponse, api *API) (*Album, error) {
 	date, err := time.Parse("2006-01-02", response.Date)
 	if err != nil {
 		return nil, err
@@ -68,8 +70,9 @@ func NewAlbum(response *AlbumResponse) (*Album, error) {
 			Big:    response.CoverBig,
 			XL:     response.CoverXL,
 		},
-		Date:   date,
-		Tracks: response.Tracks.Data,
+		Date:      date,
+		Tracklist: response.Tracks.Data,
+		api:       api,
 	}
 
 	return &album, nil
@@ -112,10 +115,24 @@ func (api *API) GetAlbumData(ID int) (*Album, error) {
 	}
 
 	// convert to album
-	album, err := NewAlbum(&response)
+	album, err := NewAlbum(&response, api)
 	if err != nil {
 		return nil, err
 	}
 
 	return album, nil
+}
+
+// GetTracks gets all tracks in an album and store them in
+// album.Tracks. Also return the slice.
+func (album *Album) GetTracks() ([]*Track, error) {
+	for _, t := range album.Tracklist {
+		track, err := album.api.GetSongData(t.ID)
+		if err != nil {
+			return []*Track{}, err
+		}
+		album.Tracks = append(album.Tracks, track)
+	}
+
+	return album.Tracks, nil
 }

@@ -82,6 +82,22 @@ func TestProgram(t *testing.T) {
 		assert.NotEqual(t, "", album.Covers.Medium)
 		assert.NotEqual(t, "", album.Covers.Big)
 		assert.NotEqual(t, "", album.Covers.XL)
-		assert.NotEqual(t, 0, album.Tracks)
+		assert.NotEqual(t, 0, len(album.Tracklist), "Should have more than one track")
+		assert.Equal(t, 0, len(album.Tracks), "Tracks should not be processed yet")
+	})
+
+	t.Run("Get Album Tracks", func(t *testing.T) {
+		const (
+			testID = 2795561
+		)
+		config, api := testSetup(t)
+
+		api.CookieLogin(config.ArlCookie)
+
+		album, _ := api.GetAlbumData(testID)
+		tracks, err := album.GetTracks()
+		assert.Equal(t, nil, err)
+		assert.Equal(t, tracks, album.Tracks)
+		assert.Equal(t, len(album.Tracklist), len(album.Tracks))
 	})
 }
