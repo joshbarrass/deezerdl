@@ -16,6 +16,7 @@ const doc = `deezerdl
 Usage:
   deezerdl login <arl>
   deezerdl download track <ID> [-f <fmt> | --format=<fmt>]
+  deezerdl download album <ID> [-f <fmt> | --format=<fmt>]
   deezerdl config set DefaultFormat <fmt>
 
 Options:

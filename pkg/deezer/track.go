@@ -88,3 +88,34 @@ func (track *Track) GetMD5() error {
 	return nil
 
 }
+
+// GetSongData gets a track
+func (api *API) GetSongData(ID int) (*Track, error) {
+	// make the request
+	body := strings.NewReader(fmt.Sprintf(`{"SNG_ID":%d}`, ID))
+	resp, err := api.ApiRequest(getSongMethod, body)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	if api.DebugMode {
+		DumpResponse(resp, "GetSongData")
+	}
+
+	// decode results key
+	var data struct {
+		Results json.RawMessage `json:"results"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
+		return nil, err
+	}
+
+	// decode track from results
+	var track Track
+	if err := json.Unmarshal(data.Results, &track); err != nil {
+		return nil, err
+	}
+	track.api = api
+
+	return &track, nil
+}

@@ -37,7 +37,7 @@ func TestProgram(t *testing.T) {
 	})
 
 	t.Run("Get Download Link", func(t *testing.T) {
-		var (
+		const (
 			testID   = 3135553
 			testName = "One More Time"
 			testMD5  = "43808a3ac856cc117362ab94718603ba"
@@ -47,7 +47,7 @@ func TestProgram(t *testing.T) {
 		api.CookieLogin(config.ArlCookie)
 
 		track, err := api.GetSongData(testID)
-		assert.Equal(t, err, nil)
+		assert.Equal(t, nil, err)
 
 		assert.Equal(t, testID, track.ID)
 		assert.Equal(t, testName, track.Title)
@@ -62,5 +62,42 @@ func TestProgram(t *testing.T) {
 		u, err := track.GetDownloadURL(FLAC)
 		assert.Equal(t, err, nil)
 		fmt.Println(u.String())
+	})
+
+	t.Run("Get Album", func(t *testing.T) {
+		const (
+			testID    = 2795561
+			testTitle = "Drukqs"
+		)
+		config, api := testSetup(t)
+
+		api.CookieLogin(config.ArlCookie)
+
+		album, err := api.GetAlbumData(testID)
+		assert.Equal(t, nil, err)
+
+		assert.Equal(t, testID, album.ID)
+		assert.Equal(t, testTitle, album.Title)
+		assert.NotEqual(t, "", album.Covers.Small)
+		assert.NotEqual(t, "", album.Covers.Medium)
+		assert.NotEqual(t, "", album.Covers.Big)
+		assert.NotEqual(t, "", album.Covers.XL)
+		assert.NotEqual(t, 0, len(album.Tracklist), "Should have more than one track")
+		assert.Equal(t, 0, len(album.Tracks), "Tracks should not be processed yet")
+	})
+
+	t.Run("Get Album Tracks", func(t *testing.T) {
+		const (
+			testID = 2795561
+		)
+		config, api := testSetup(t)
+
+		api.CookieLogin(config.ArlCookie)
+
+		album, _ := api.GetAlbumData(testID)
+		tracks, err := album.GetTracks()
+		assert.Equal(t, nil, err)
+		assert.Equal(t, tracks, album.Tracks)
+		assert.Equal(t, len(album.Tracklist), len(album.Tracks))
 	})
 }
