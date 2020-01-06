@@ -227,7 +227,7 @@ func FormatExtension(format deezer.Format) string {
 	case deezer.MP3_320, deezer.MP3_256:
 		return ".mp3"
 	default:
-		logrus.Fatalf("invalid format: %s", format)
+		logrus.Fatalf("invalid format: %d", format)
 	}
 	return ""
 }
