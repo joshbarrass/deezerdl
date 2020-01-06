@@ -81,8 +81,9 @@ flycheck_*.el
 
 # End of https://www.gitignore.io/api/go
 
-# compiled binary
+# compiled binaries
 deezerdl
+releases/
 
 # downloaded files
 *.mp3
