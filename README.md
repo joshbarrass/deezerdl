@@ -9,7 +9,7 @@ Deezer downloader inspired by DeezloaderRemix written in go.
 This software is not in any way affiliated with Deezer.
 
 **The author of this software does not condone its use for piracy.**
-This software was created for educational purposes, for me to learn
-how Deezer works, and should be used only for legitimate
+This software was created for my own education, for me and for others
+to learn how Deezer works. It should be used only for legitimate
 purposes. **Support will not be given to anyone who uses this software
 for piracy.**
