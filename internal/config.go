@@ -63,7 +63,7 @@ func LoadConfig() (*Configuration, error) {
 	fullPath := filepath.Join(os.ExpandEnv(configDir), configFile)
 	inFile, err := os.Open(fullPath)
 	if err != nil {
-		return nil, nil
+		return nil, err
 	}
 	defer inFile.Close()
 
