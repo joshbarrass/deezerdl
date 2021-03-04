@@ -2,14 +2,15 @@ package internal
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 )
 
 const (
-	configDir                  = "$HOME/.config/deezerdl"
-	configDirPerms os.FileMode = 0755
-	configFile                 = "config.json"
+	configDirSuffix             = "deezerdl"
+	configDirPerms  os.FileMode = 0755
+	configFile                  = "config.json"
 )
 
 type Configuration struct {
@@ -26,14 +27,34 @@ func NewConfiguration() *Configuration {
 	}
 }
 
+// GetConfigDir returns the platform-specific configuration directory
+func GetConfigDir() (string, error) {
+	// get the platform-specific config dir
+	userConfigDir, err := os.UserConfigDir()
+	if err != nil {
+		return "", err
+	}
+
+	// append the application-specific suffix
+	configDir := filepath.Join(userConfigDir, configDirSuffix)
+
+	return configDir, nil
+}
+
 // CreateConfig creates the config dir and config file if it doesn't
 // exist
 func CreateConfig() error {
+	configDir, err := GetConfigDir()
+	if err != nil {
+		return err
+	}
+	fmt.Println(configDir)
+
 	// check if config dir exists
 	if exists, err := FileExists(os.ExpandEnv(configDir)); err != nil {
 		return err
 	} else if !exists {
-		os.Mkdir(os.ExpandEnv(configDir), configDirPerms)
+		os.MkdirAll(os.ExpandEnv(configDir), configDirPerms)
 	}
 
 	// check if config file exists
@@ -59,6 +80,11 @@ func LoadConfig() (*Configuration, error) {
 		return nil, err
 	}
 
+	configDir, err := GetConfigDir()
+	if err != nil {
+		return nil, err
+	}
+
 	// open config file
 	fullPath := filepath.Join(os.ExpandEnv(configDir), configFile)
 	inFile, err := os.Open(fullPath)
@@ -79,6 +105,10 @@ func LoadConfig() (*Configuration, error) {
 // SaveConfig saves the config object. The configuration file must
 // already exist -- call CreateConfig first if this is not the case.
 func (config *Configuration) SaveConfig() error {
+	configDir, err := GetConfigDir()
+	if err != nil {
+		return err
+	}
 	// open config
 	fullPath := filepath.Join(os.ExpandEnv(configDir), configFile)
 	outFile, err := os.Create(fullPath)
