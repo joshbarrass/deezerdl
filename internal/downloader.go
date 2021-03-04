@@ -33,7 +33,6 @@ func DownloadFile(url, outPath string) error {
 	if err != nil {
 		return err
 	}
-	defer outFile.Close()
 
 	// write to the file
 	wt := writetracker.NewWriteTracker("")
@@ -41,6 +40,7 @@ func DownloadFile(url, outPath string) error {
 	if err != nil {
 		return err
 	}
+	outFile.Close()
 
 	// move to new line because of how ShowProgress works
 	fmt.Println("")
