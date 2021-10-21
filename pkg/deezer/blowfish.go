@@ -78,9 +78,14 @@ func DecryptSongFile(key []byte, inputPath, outputPath string) error {
 		}
 
 		// write the chunk back
-		n, err = outFile.Write(buf)
+		n_read := n
+		n, err = outFile.Write(buf[:n_read])
 		if err != nil {
 			return err
+		}
+		// assert that bytes read = bytes written just in case
+		if n_read != n {
+			return fmt.Errorf("bytes read does not match bytes written: (%d != %d)", n_read, n)
 		}
 
 		// read next chunk
