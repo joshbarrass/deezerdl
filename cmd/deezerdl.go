@@ -9,7 +9,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-const VERSION = "0.2.3"
+const VERSION = "0.2.4"
 
 const doc = `deezerdl
 
