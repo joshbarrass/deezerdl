@@ -14,6 +14,7 @@ const (
 	FLAC    Format = 9
 	MP3_320        = 3
 	MP3_256        = 5
+	MP3_128        = 1
 )
 
 const (
